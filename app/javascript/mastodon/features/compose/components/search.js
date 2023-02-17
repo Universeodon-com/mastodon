@@ -19,13 +19,13 @@ class SearchPopout extends React.PureComponent {
         <h4><FormattedMessage id='search_popout.search_format' defaultMessage='Advanced search format' /></h4>
 
         <ul>
-          <li>Advanced Search - Operators can be inverted with <em>-</em></li>
+          <li>Use "quotes for phrases" - Operators can be inverted with <em>-</em></li>
           <li>Operators:</li>
-          <li><em>domain:universeodon.com</em> search posts only from Universeodon.com</li>
+          <li><em>domain:universeodon.com</em> search posts from Universeodon.com</li>
           <li><em>lang:es</em> Find posts in spanish</li>
-          <li><em>has:</em> Operator</li>
+          <li><em>has:</em> Operators</li>
           <li><em>has:cw</em> has content Warning</li>
-          <li><em>has:media</em> has media</li>
+          <li><em>has:media</em> has media <em>has:media tacos</em></li>
           <li><em>has:link</em> has link</li>
           <li><em>has:poll</em> has poll</li>
           <li><em>has:tag</em> has tag</li>
