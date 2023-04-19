@@ -39,19 +39,11 @@ class MediaAttachment < ApplicationRecord
 
   MAX_DESCRIPTION_LENGTH = 1_500
 
-<<<<<<< HEAD
-  IMAGE_LIMIT = 12.megabytes
-  VIDEO_LIMIT = 100.megabytes
-
-  MAX_VIDEO_MATRIX_LIMIT = 2_304_000 # 1920x1200px
-  MAX_VIDEO_FRAME_RATE   = 240
-=======
   IMAGE_LIMIT = 16.megabytes
   VIDEO_LIMIT = 99.megabytes
 
   MAX_VIDEO_MATRIX_LIMIT = 8_294_400 # 3840x2160px
   MAX_VIDEO_FRAME_RATE   = 120
->>>>>>> upstream/main
 
   IMAGE_FILE_EXTENSIONS = %w(.jpg .jpeg .png .gif .webp .heic .heif .avif).freeze
   VIDEO_FILE_EXTENSIONS = %w(.webm .mp4 .m4v .mov).freeze
