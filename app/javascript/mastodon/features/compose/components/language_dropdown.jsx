@@ -209,11 +209,7 @@ class LanguageDropdownMenu extends React.PureComponent {
     const { value } = this.props;
 
     return (
-<<<<<<< HEAD:app/javascript/mastodon/features/compose/components/language_dropdown.js
-      <div key={lang[0]} role='option' tabIndex='0' data-index={lang[0]} className={classNames('language-dropdown__dropdown__results__item', { active: lang[0] === value })} aria-selected={lang[0] === value} onClick={this.handleClick} onKeyDown={this.handleKeyDown}>
-=======
       <div key={lang[0]} role='option' tabIndex={0} data-index={lang[0]} className={classNames('language-dropdown__dropdown__results__item', { active: lang[0] === value })} aria-selected={lang[0] === value} onClick={this.handleClick} onKeyDown={this.handleKeyDown}>
->>>>>>> upstream/main:app/javascript/mastodon/features/compose/components/language_dropdown.jsx
         <span className='language-dropdown__dropdown__results__item__native-name' lang={lang[0]}>{lang[2]}</span> <span className='language-dropdown__dropdown__results__item__common-name'>({lang[1]})</span>
       </div>
     );
