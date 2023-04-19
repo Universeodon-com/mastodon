@@ -22,11 +22,6 @@ const mapDispatchToProps = (dispatch) => ({
   },
 });
 
-<<<<<<< HEAD:app/javascript/mastodon/features/ui/components/header.js
-export default @withRouter
-@connect(null, mapDispatchToProps)
-=======
->>>>>>> upstream/main:app/javascript/mastodon/features/ui/components/header.jsx
 class Header extends React.PureComponent {
 
   static contextTypes = {
