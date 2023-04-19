@@ -389,11 +389,7 @@ $content-width: 840px;
           z-index: 10;
           width: 100%;
           height: calc(100% - 56px);
-<<<<<<< HEAD
-          left: 0;
-=======
           inset-inline-start: 0;
->>>>>>> upstream/main
           bottom: 0;
           overflow-y: auto;
           background: $ui-base-color;
