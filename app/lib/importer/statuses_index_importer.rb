@@ -24,6 +24,7 @@ class Importer::StatusesIndexImporter < Importer::BaseImporter
           # is called before rendering the data and we need to filter based
           # on the results of the filter, so this filtering happens here instead
           bulk.map! do |entry|
+<<<<<<< HEAD
             new_entry = begin
               if entry[:index] &&
                  entry.dig(:index, :data, 'searchable_by').blank? &&
@@ -33,6 +34,13 @@ class Importer::StatusesIndexImporter < Importer::BaseImporter
                 entry
               end
             end
+=======
+            new_entry = if entry[:index] && entry.dig(:index, :data, 'searchable_by').blank?
+                          { delete: entry[:index].except(:data) }
+                        else
+                          entry
+                        end
+>>>>>>> upstream/main
 
             if new_entry[:index]
               indexed += 1

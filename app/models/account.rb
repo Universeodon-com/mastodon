@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: accounts
@@ -52,7 +53,7 @@
 #
 
 class Account < ApplicationRecord
-  self.ignored_columns = %w(
+  self.ignored_columns += %w(
     subscription_expires_at
     secret
     remote_url
@@ -78,8 +79,8 @@ class Account < ApplicationRecord
   include DomainMaterializable
   include AccountMerging
 
-  enum protocol: [:ostatus, :activitypub]
-  enum suspension_origin: [:local, :remote], _prefix: true
+  enum protocol: { ostatus: 0, activitypub: 1 }
+  enum suspension_origin: { local: 0, remote: 1 }, _prefix: true
 
   validates :username, presence: true
   validates_with UniqueUsernameValidator, if: -> { will_save_change_to_username? }
@@ -120,6 +121,8 @@ class Account < ApplicationRecord
   scope :by_domain_and_subdomains, ->(domain) { where(domain: domain).or(where(arel_table[:domain].matches("%.#{domain}"))) }
   scope :not_excluded_by_account, ->(account) { where.not(id: account.excluded_from_timeline_account_ids) }
   scope :not_domain_blocked_by_account, ->(account) { where(arel_table[:domain].eq(nil).or(arel_table[:domain].not_in(account.excluded_from_timeline_domains))) }
+
+  after_update_commit :trigger_update_webhooks
 
   delegate :email,
            :unconfirmed_email,
@@ -313,9 +316,7 @@ class Account < ApplicationRecord
 
         previous = old_fields.find { |item| item['value'] == attr[:value] }
 
-        if previous && previous['verified_at'].present?
-          attr[:verified_at] = previous['verified_at']
-        end
+        attr[:verified_at] = previous['verified_at'] if previous && previous['verified_at'].present?
 
         fields << attr
       end
@@ -461,13 +462,12 @@ class Account < ApplicationRecord
       return [] if text.blank?
 
       text.scan(MENTION_RE).map { |match| match.first.split('@', 2) }.uniq.filter_map do |(username, domain)|
-        domain = begin
-          if TagManager.instance.local_domain?(domain)
-            nil
-          else
-            TagManager.instance.normalize_domain(domain)
-          end
-        end
+        domain = if TagManager.instance.local_domain?(domain)
+                   nil
+                 else
+                   TagManager.instance.normalize_domain(domain)
+                 end
+
         EntityCache.instance.mention(username, domain)
       end
     end
@@ -542,6 +542,7 @@ class Account < ApplicationRecord
 
   def ensure_keys!
     return unless local? && private_key.blank? && public_key.blank?
+
     generate_keys
     save!
   end
@@ -615,5 +616,10 @@ class Account < ApplicationRecord
     return unless local?
 
     CanonicalEmailBlock.where(reference_account: self).delete_all
+  end
+
+  # NOTE: the `account.created` webhook is triggered by the `User` model, not `Account`.
+  def trigger_update_webhooks
+    TriggerWebhookWorker.perform_async('account.updated', 'Account', id) if local?
   end
 end

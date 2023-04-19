@@ -56,12 +56,13 @@ class Scheduler::AccountsStatusesCleanupScheduler
       # The idea here is to loop through all policies at least once until the budget is exhausted
       # and start back after the last processed account otherwise
       break if budget.zero? || (num_processed_accounts.zero? && first_policy_id.nil?)
+
       first_policy_id = nil
     end
   end
 
   def compute_budget
-    threads = Sidekiq::ProcessSet.new.select { |x| x['queues'].include?('push') }.map { |x| x['concurrency'] }.sum
+    threads = Sidekiq::ProcessSet.new.select { |x| x['queues'].include?('push') }.pluck('concurrency').sum
     [PER_THREAD_BUDGET * threads, MAX_BUDGET].min
   end
 

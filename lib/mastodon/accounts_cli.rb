@@ -57,6 +57,7 @@ module Mastodon
     option :role
     option :reattach, type: :boolean
     option :force, type: :boolean
+    option :approve, type: :boolean
     desc 'create USERNAME', 'Create a new user account'
     long_desc <<-LONG_DESC
       Create a new user account with a given USERNAME and an
@@ -72,6 +73,8 @@ module Mastodon
       account is still in use by someone else, you can supply
       the --force option to delete the old record and reattach the
       username to the new account anyway.
+
+      With the --approve option, the account will be approved.
     LONG_DESC
     def create(username)
       role_id  = nil
@@ -89,7 +92,7 @@ module Mastodon
 
       account  = Account.new(username: username)
       password = SecureRandom.hex
-      user     = User.new(email: options[:email], password: password, agreement: true, approved: true, role_id: role_id, confirmed_at: options[:confirmed] ? Time.now.utc : nil, bypass_invite_request_check: true)
+      user     = User.new(email: options[:email], password: password, agreement: true, role_id: role_id, confirmed_at: options[:confirmed] ? Time.now.utc : nil, bypass_invite_request_check: true)
 
       if options[:reattach]
         account = Account.find_local(username) || Account.new(username: username)
@@ -111,6 +114,8 @@ module Mastodon
           user.confirmed_at = nil
           user.confirm!
         end
+
+        user.approve! if options[:approve]
 
         say('OK', :green)
         say("New password: #{password}")
@@ -184,9 +189,10 @@ module Mastodon
       user.disabled = true if options[:disable]
       user.approved = true if options[:approve]
       user.otp_required_for_login = false if options[:disable_2fa]
-      user.confirm if options[:confirm]
 
       if user.save
+        user.confirm if options[:confirm]
+
         say('OK', :green)
         say("New password: #{password}") if options[:reset_password]
       else
@@ -496,14 +502,12 @@ module Mastodon
         scope = Account.where(id: ::Follow.where(account: account).select(:target_account_id))
 
         scope.find_each do |target_account|
-          begin
-            UnfollowService.new.call(account, target_account)
-          rescue => e
-            progress.log pastel.red("Error processing #{target_account.id}: #{e}")
-          ensure
-            progress.increment
-            processed += 1
-          end
+          UnfollowService.new.call(account, target_account)
+        rescue => e
+          progress.log pastel.red("Error processing #{target_account.id}: #{e}")
+        ensure
+          progress.increment
+          processed += 1
         end
 
         BootstrapTimelineWorker.perform_async(account.id)
@@ -513,14 +517,12 @@ module Mastodon
         scope = Account.where(id: ::Follow.where(target_account: account).select(:account_id))
 
         scope.find_each do |target_account|
-          begin
-            UnfollowService.new.call(target_account, account)
-          rescue => e
-            progress.log pastel.red("Error processing #{target_account.id}: #{e}")
-          ensure
-            progress.increment
-            processed += 1
-          end
+          UnfollowService.new.call(target_account, account)
+        rescue => e
+          progress.log pastel.red("Error processing #{target_account.id}: #{e}")
+        ensure
+          progress.increment
+          processed += 1
         end
       end
 
