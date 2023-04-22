@@ -48,11 +48,11 @@ class AccountSearchService < BaseService
   def search_results
     return [] if limit_for_non_exact_results.zero?
 
-    @search_results ||= begin
-      results = from_elasticsearch if Chewy.enabled?
-      results ||= from_database
-      results
-    end
+    @search_results = if Chewy.enabled?
+                        from_elasticsearch
+                      else
+                        from_database
+                      end
   end
 
   def from_database
@@ -72,20 +72,18 @@ class AccountSearchService < BaseService
   end
 
   def from_elasticsearch
-    must_clauses   = [{ multi_match: { query: terms_for_query, fields: likely_acct? ? %w(acct.edge_ngram acct) : %w(acct.edge_ngram acct display_name.edge_ngram display_name), type: 'most_fields', operator: 'and' } }]
-    should_clauses = []
+    return [] if account && options[:following] && following_ids.empty?
 
-    if account
-      return [] if options[:following] && following_ids.empty?
-
-      if options[:following]
-        must_clauses << { terms: { id: following_ids } }
-      elsif following_ids.any?
-        should_clauses << { terms: { id: following_ids, boost: 100 } }
-      end
-    end
-
-    query     = { bool: { must: must_clauses, should: should_clauses } }
+    query = SearchQueryTransformer
+            .new
+            .apply(SearchQueryParser.new.parse(@query))
+            .accounts_query(
+              likely_acct?,
+              Rails.configuration.x.account_search_scope,
+              !account.nil?,
+              options[:following],
+              following_ids
+            )
     functions = [reputation_score_function, followers_score_function, time_distance_function]
 
     records = AccountsIndex.query(function_score: { query: query, functions: functions, boost_mode: 'multiply', score_mode: 'avg' })
