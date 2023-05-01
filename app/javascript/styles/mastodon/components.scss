@@ -3112,6 +3112,7 @@ $ui-header-height: 55px;
 .compose-form__highlightable {
   border-radius: 4px;
   transition: box-shadow 300ms linear;
+  overflow-y: auto;
 
   &.active {
     transition: none;
