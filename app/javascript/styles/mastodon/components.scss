@@ -3170,7 +3170,7 @@ $ui-header-height: 55px;
   }
 
   .autosuggest-textarea__textarea {
-    overflow-y: hidden;
+    overflow-y: auto;
   }
 
   .compose-form__upload-thumbnail {
