@@ -3164,13 +3164,14 @@ $ui-header-height: 55px;
 
   .compose-form__autosuggest-wrapper {
     overflow-y: auto;
+    height: calc(100% - 80px);
     background-color: $white;
     border-radius: 4px 4px 0 0;
     flex: 0 1 auto;
   }
 
   .autosuggest-textarea__textarea {
-    overflow-y: auto;
+    overflow-y: hidden;
   }
 
   .compose-form__upload-thumbnail {
