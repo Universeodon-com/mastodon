@@ -2936,7 +2936,6 @@ $ui-header-height: 55px;
 
   .compose-form__autosuggest-wrapper {
     overflow-y: auto;
-    height: calc(100% - 80px);
     background-color: $white;
     border-radius: 4px 4px 0 0;
     flex: 0 1 auto;
@@ -3406,14 +3405,9 @@ $ui-header-height: 55px;
   }
 }
 
-.keyboard-shortcuts,
-.search-reference {
+.keyboard-shortcuts {
   padding: 8px 0 0;
   overflow: hidden;
-
-  p {
-    padding: 0 10px 8px;
-  }
 
   thead {
     position: absolute;
@@ -3422,12 +3416,6 @@ $ui-header-height: 55px;
 
   td {
     padding: 0 10px 8px;
-  }
-
-  th {
-    padding: 8px 10px;
-    text-align: left;
-    font-weight: bold;
   }
 
   kbd {
