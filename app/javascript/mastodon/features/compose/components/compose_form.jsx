@@ -295,6 +295,8 @@ class ComposeForm extends ImmutablePureComponent {
               <CharacterCounter max={1000} text={this.getFulltextForCharacterCounting()} />
             </div>
           </div>
+
+        </div>
         
           <div className='compose-form__publish'>
             <div className='compose-form__publish-button-wrapper'>
@@ -306,7 +308,6 @@ class ComposeForm extends ImmutablePureComponent {
               />
             </div>
           </div>
-        </div>
       </form>
     );
   }
