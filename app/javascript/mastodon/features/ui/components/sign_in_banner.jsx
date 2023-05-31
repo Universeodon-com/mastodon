@@ -11,13 +11,13 @@ const SignInBanner = () => {
   const dispatch = useAppDispatch();
 
   const openClosedRegistrationsModal = useCallback(
-    () => dispatch(openModal('CLOSED_REGISTRATIONS')),
+    () => dispatch(openModal({ modalType: 'CLOSED_REGISTRATIONS' })),
     [dispatch],
   );
 
   let signupButton;
 
-  const signupUrl = useAppSelector((state) => state.getIn(['server', 'server', 'registrations', 'url'], '/auth/sign_up'));
+  const signupUrl = useAppSelector((state) => state.getIn(['server', 'server', 'registrations', 'url'], null) || '/auth/sign_up');
 
   if (registrationsOpen) {
     signupButton = (
