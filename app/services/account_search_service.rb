@@ -47,11 +47,11 @@ class AccountSearchService < BaseService
   def search_results
     return [] if limit_for_non_exact_results.zero?
 
-    @search_results = if Chewy.enabled?
-                        from_elasticsearch
-                      else
-                        from_database
-                      end
+    @search_results ||= begin
+      results = from_elasticsearch if Chewy.enabled?
+      results ||= from_database
+      results
+    end
   end
 
   def from_database
@@ -74,16 +74,17 @@ class AccountSearchService < BaseService
     must_clauses   = must_clause
     should_clauses = should_clause
 
-    query = SearchQueryTransformer
-            .new
-            .apply(SearchQueryParser.new.parse(@query))
-            .accounts_query(
-              likely_acct?,
-              Rails.configuration.x.account_search_scope,
-              !account.nil?,
-              options[:following],
-              following_ids
-            )
+    if account
+      return [] if options[:following] && following_ids.empty?
+
+      if options[:following]
+        must_clauses << { terms: { id: following_ids } }
+      elsif following_ids.any?
+        should_clauses << { terms: { id: following_ids, boost: 100 } }
+      end
+    end
+
+    query     = { bool: { must: must_clauses, should: should_clauses } }
     functions = [reputation_score_function, followers_score_function, time_distance_function]
 
     records = AccountsIndex.query(function_score: { query: query, functions: functions })
