@@ -7,18 +7,10 @@ class AccountsIndex < Chewy::Index
         type: 'stop',
         stopwords: '_english_',
       },
-<<<<<<< HEAD
-=======
-
->>>>>>> main
       english_stemmer: {
         type: 'stemmer',
         language: 'english',
       },
-<<<<<<< HEAD
-=======
-
->>>>>>> main
       english_possessive_stemmer: {
         type: 'stemmer',
         language: 'possessive_english',
