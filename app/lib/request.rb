@@ -57,7 +57,7 @@ class Request
   # We enforce a 5s timeout on DNS resolving, 5s timeout on socket opening
   # and 5s timeout on the TLS handshake, meaning the worst case should take
   # about 15s in total
-  TIMEOUT = { connect: 5, read: 10, write: 10 }.freeze
+  TIMEOUT = { connect: 5, read: 30, write: 10 }.freeze
 
   include RoutingHelper
 
