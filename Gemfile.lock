@@ -307,7 +307,7 @@ GEM
       activesupport (>= 5.1)
       haml (>= 4.0.6)
       railties (>= 5.1)
-    haml_lint (0.48.0)
+    haml_lint (0.49.1)
       haml (>= 4.0, < 6.2)
       parallel (~> 1.10)
       rainbow
@@ -569,7 +569,7 @@ GEM
     rake (13.0.6)
     rdf (3.2.11)
       link_header (~> 0.0, >= 0.0.8)
-    rdf-normalize (0.6.0)
+    rdf-normalize (0.6.1)
       rdf (~> 3.2)
     redcarpet (3.6.0)
     redis (4.8.1)
